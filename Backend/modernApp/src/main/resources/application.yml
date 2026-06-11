@@ -1,0 +1,75 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: medicheck-backend
+
+  # ── JPA ───────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: validate          # use 'create' on first run, then switch to validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # ── Redis ─────────────────────────────────────────────────────────
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  # ── WebSocket (SockJS fallback) ────────────────────────────────────
+  websocket:
+    allowed-origins: "*"
+
+# ── Server ──────────────────────────────────────────────────────────
+server:
+  port: 8080
+
+# ── Actuator ────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus, info
+  endpoint:
+    health:
+      show-details: always
+
+# ── Swagger / OpenAPI ────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# ── App-level custom properties ──────────────────────────────────────
+medicheck:
+  openrouter:
+    api-key: ${OPENROUTER_API_KEY}
+    model: ${OPENROUTER_MODEL:google/gemini-2.0-flash-exp:free}
+    base-url: https://openrouter.ai/api/v1/chat/completions
+
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}
+
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-use-a-long-secret}
+    expiry-minutes: 30
+
+  rate-limit:
+    requests-per-minute: 20       # per IP per feature
+
+  image:
+    max-size-bytes: 2097152       # 2 MB
+    allowed-types:
+      - image/jpeg
+      - image/png
+
+  ai:
+    confidence-threshold: 0.5    # below this → show disclaimer

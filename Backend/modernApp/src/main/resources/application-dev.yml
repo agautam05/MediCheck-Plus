@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/medicheck
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop       # recreate schema on every restart in dev
+    show-sql: true
+
+logging:
+  level:
+    com.medicheck: DEBUG
+    org.springframework.security: DEBUG
