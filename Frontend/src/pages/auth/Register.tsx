@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import apiClient from "@/lib/axios";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -9,12 +10,15 @@ export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (!name || !email || !password) {
             toast.error("Please fill all fields");
             return;
         }
+
+        setIsLoading(true);
 
         const user = {
             name,
@@ -27,6 +31,18 @@ export default function Register() {
             JSON.stringify(user)
         );
 
+        // Initialize backend session for API access
+        try {
+            const response = await apiClient.post("/auth/session", {
+                language: "hi",
+            });
+            const { sessionToken } = response.data.data;
+            localStorage.setItem("authToken", sessionToken);
+        } catch (err) {
+            console.warn("Backend not available. Session will be created on login.");
+        }
+
+        setIsLoading(false);
         toast.success("Account Created Successfully");
 
         setTimeout(() => {
@@ -75,9 +91,10 @@ export default function Register() {
 
                     <button
                         onClick={handleRegister}
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg"
+                        disabled={isLoading}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg disabled:opacity-50"
                     >
-                        Register
+                        {isLoading ? "Creating Account..." : "Register"}
                     </button>
 
                 </div>

@@ -122,7 +122,7 @@ MediCheck+ </h1>
   to="/emergency-profile"
   className={navClass}
 >
-  <QrCode size={20} />
+  <ShieldAlert size={20} />
   Emergency Profile
 </NavLink>
   </nav>

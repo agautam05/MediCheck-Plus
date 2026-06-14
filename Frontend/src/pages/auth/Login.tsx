@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import apiClient from "@/lib/axios";
 
 export default function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       toast.error("Please fill all fields");
       return;
     }
 
-    // Admin Login
+    setIsLoading(true);
+
+    // Admin Login (local - bypasses backend session for admin)
     if (
       email === "admin@medicheck.com" &&
       password === "admin123"
@@ -28,49 +32,67 @@ export default function Login() {
         })
       );
 
-      toast.success("Admin Login Successful");
+      // Initialize backend session for admin too
+      try {
+        const response = await apiClient.post("/auth/session", {
+          language: "hi",
+        });
+        const { sessionToken } = response.data.data;
+        localStorage.setItem("authToken", sessionToken);
+      } catch (err) {
+        console.warn("Backend not available, proceeding with local auth");
+      }
 
+      setIsLoading(false);
+      toast.success("Admin Login Successful");
       setTimeout(() => {
         navigate("/admin");
       }, 1000);
-
       return;
     }
 
-    // User Login
-    const savedUser =
-      localStorage.getItem("medicheckUser");
+    try {
+      // Initialize backend session
+      const sessionRes = await apiClient.post("/auth/session", {
+        language: "hi",
+      });
+      const { sessionToken } = sessionRes.data.data;
+      localStorage.setItem("authToken", sessionToken);
 
-    if (!savedUser) {
-      toast.error(
-        "No account found. Please register first."
+      // User Login (local storage based)
+      const savedUser = localStorage.getItem("medicheckUser");
+
+      if (!savedUser) {
+        toast.error("No account found. Please register first.");
+        setIsLoading(false);
+        return;
+      }
+
+      const user = JSON.parse(savedUser);
+
+      if (user.email !== email || user.password !== password) {
+        toast.error("Invalid email or password");
+        setIsLoading(false);
+        return;
+      }
+
+      localStorage.setItem(
+        "loggedInUser",
+        JSON.stringify({
+          ...user,
+          role: "user",
+        })
       );
-      return;
+
+      setIsLoading(false);
+      toast.success("Login Successful");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error("Failed to connect to server. Please ensure the backend is running.");
     }
-
-    const user = JSON.parse(savedUser);
-
-    if (
-      user.email !== email ||
-      user.password !== password
-    ) {
-      toast.error("Invalid email or password");
-      return;
-    }
-
-    localStorage.setItem(
-      "loggedInUser",
-      JSON.stringify({
-        ...user,
-        role: "user",
-      })
-    );
-
-    toast.success("Login Successful");
-
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 1000);
   };
 
   return (
@@ -111,9 +133,10 @@ export default function Login() {
 
           <button
             onClick={handleLogin}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            disabled={isLoading}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
           >
-            Login
+            {isLoading ? "Connecting..." : "Login"}
           </button>
 
         </div>

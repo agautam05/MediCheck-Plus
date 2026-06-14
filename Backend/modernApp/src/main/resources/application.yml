@@ -54,9 +54,9 @@ medicheck:
     base-url: https://openrouter.ai/api/v1/chat/completions
 
   cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME}
-    api-key: ${CLOUDINARY_API_KEY}
-    api-secret: ${CLOUDINARY_API_SECRET}
+    cloud-name: ${CLOUD_NAME}
+    api-key: ${CLOUD_API_KEY}
+    api-secret: ${CLOUD_SECRET}
 
   jwt:
     secret: ${JWT_SECRET:change-me-in-production-use-a-long-secret}

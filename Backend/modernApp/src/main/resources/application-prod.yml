@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL}
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSEORD}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2

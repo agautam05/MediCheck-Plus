@@ -22,7 +22,6 @@
         <java.version>21</java.version>
         <jjwt.version>0.12.5</jjwt.version>
         <bucket4j.version>8.7.0</bucket4j.version>
-        <aws.sdk.version>1.12.701</aws.sdk.version>
         <springdoc.version>2.5.0</springdoc.version>
     </properties>
 
@@ -99,11 +98,11 @@
             <version>${bucket4j.version}</version>
         </dependency>
 
-        <!-- ── AWS S3 ────────────────────────────────────────────────── -->
+        <!-- ── Cloudinary (image hosting) ─────────────────────────────── -->
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>${aws.sdk.version}</version>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.38.0</version>
         </dependency>
 
         <!-- ── OpenAPI / Swagger UI ──────────────────────────────────── -->
